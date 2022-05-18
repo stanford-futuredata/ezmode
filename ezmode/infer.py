@@ -1,3 +1,4 @@
+import subprocess
 import ezmode
 import pandas as pd
 from ezmode import data
@@ -13,7 +14,7 @@ class InferEngine:
         self.model = model
         self.gpus = gpus
 
-    def write_bash_scripts(self, script = None):
+    def deploy(self, script = None):
         self.dataloader.init_metadata()
         val_csv = self.dataloader.get_val_data()
         val_data = pd.read_csv(val_csv)
@@ -21,17 +22,8 @@ class InferEngine:
         videos = val_data['vid_base_path'].tolist()
         num_videos = len(videos)
 
-        if (script == None):
-            infer_script_fname = os.path.join('/'.join(ezmode.__file__.split('/')[:-1]), 'infer_script.py')
-        else:
-            infer_script_fname = script
-
-        #assert(os.path.exists(infer_script_fname))
-
-        bash_dest = os.path.join(self.dataloader.working_dir, 'run_infer.sh')
-
         processes = []
-        
+
         videos_left = num_videos 
 
         for gpu in range(self.gpus):
@@ -56,11 +48,7 @@ class InferEngine:
                     f'--num_videos {num_videos} '
                     f'--to_process {to_process} \n')
 
+        infer_job = [subprocess.Popen(process, shell = True) for process in processes]
+        for infer_job in infer_jobs:
+            infer_job.wait()
 
-
-        if (os.path.exists(bash_dest)):
-            os.remove(bash_dest)
-
-        f = open(bash_dest, "a")
-        f.writelines(processes)
-        f.close()
