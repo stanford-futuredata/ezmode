@@ -12,13 +12,13 @@ class DataLoader:
             project_name, 
             root, 
             working_dir, 
-            round_name, 
+            round_no, 
             db):
 
         self.project_name= project_name
         self.root = root
         self.working_dir = working_dir
-        self.round_name = round_name
+        self.round_no = round_no
         self.db = db
         self.train_data = None
         self.train_df = None
@@ -26,7 +26,7 @@ class DataLoader:
         self.engine = sqlalchemy.create_engine('sqlite:///{}'.format(self.db))
         self.metadata_dir = os.path.join(self.working_dir, f'{project_name}_metadata')
         self.val_data = os.path.join(self.metadata_dir, 'val_data.csv')
-        self.round_working_dir = os.path.join(self.working_dir, self.round_name)
+        self.round_working_dir = os.path.join(self.working_dir, f'round{self.round_no}')
 
         self.class_dict = {}
 
@@ -80,7 +80,11 @@ class DataLoader:
         self.train_df = train_df
         return 
 
-    def get_user_actions(self, start_idx, end_idx, with_labels = True):
+    def get_user_actions(self, 
+            start_idx = (self.round_no - 1) * 100, 
+            end_idx = self.round_no, 
+            with_labels = True):
+
         data = []
         
         if (with_labels):

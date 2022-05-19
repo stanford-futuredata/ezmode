@@ -11,22 +11,32 @@ true_pos = 0
 class Selector:
     def __init__(self, 
             dataloader, 
+            num_to_label, 
+            agg_every_n, 
             rare_class, 
             prox, 
-            prox_rad = None):
+            prox_rad, 
+            cluster, 
+            cluster_p, 
+            add_only_rare = True):
 
         self.dataloader = dataloader
+        self.num_to_label = num_to_label
+        self.agg_every_n = agg_every_n
         self.rare_class = rare_class
         self.prox = prox
         self.prox_rad = prox_rad 
+        self.cluster = cluster
+        self.cluster_p = cluster_p
+        self.add_only_rare = add_only_rare
         self.logits = None
         self.num_to_label = None
 
         scores_dir = os.path.join(self.dataloader.round_working_dir, 'scores')
         self.scores = glob.glob(os.path.join(scores_dir, '*'))
 
-    def aggregate_groupby(self, groups, every_n = None):
-        print("Starting aggregatios...")
+    def aggregate_groupby(self, groups):
+        print("Starting aggregation...")
 
         groupby_logits = pd.DataFrame()
         
@@ -37,28 +47,22 @@ class Selector:
             logits_per_group = logits.groupby(by=groups)
 
             for group in logits_per_group.__iter__():
-
                 group_data = group[1]
+                unique_image_ids = np.unique(group_data['image_id'])
+                every_n_clusters = [unique_image_ids[i:i + self.agg_every_n] for i in range(0, len(unique_image_ids), self.agg_every_n)]
 
-                if (every_n != None):
-                    unique_image_ids = np.unique(group_data['image_id'])
-                    every_n_clusters = [unique_image_ids[i:i + every_n] for i in range(0, len(unique_image_ids), every_n)]
-
-                    for cluster in every_n_clusters:
-                        cluster_logits = group_data[group_data['image_id'].isin(cluster)]
-                        max_frame = cluster_logits[cluster_logits['score']==cluster_logits['score'].max()]
-                        groupby_logits = groupby_logits.append(max_frame)
-
-                else: 
-                    max_frame = group_data[group_data['score']==group_data['score'].max()]
+                for cluster in every_n_clusters:
+                    cluster_logits = group_data[group_data['image_id'].isin(cluster)]
+                    max_frame = cluster_logits[cluster_logits['score']==cluster_logits['score'].max()]
                     groupby_logits = groupby_logits.append(max_frame)
 
 
         groupby_logits = groupby_logits.sort_values(by='score', ascending = False)
         return groupby_logits
 
-    def add_train_data(self, start_idx, end_idx, only_rare = False, cluster = True, p = 0.5):
-        train_data = self.dataloader.get_user_actions(start_idx, end_idx)
+    def add_train_data(self, only_rare = False, cluster = True, p = 0.5):
+
+        train_data = self.dataloader.get_user_actions()
 
         if (only_rare):
             train_data = [image  for image in train_data if (image[3]==self.rare_class)]
@@ -66,21 +70,18 @@ class Selector:
         if (cluster):
             logits_per_image = self.aggregate_groupby(groups = ['vid_base_path', 'image_id'])
             train_data_rare = [image  for image in train_data if (image[3]==self.rare_class)]
-            print("clusters get_merged")
             clusters = get_merged(train_data_rare)
-            print("conf sample")
             max_prob_clusters = conf_sample(clusters, logits_per_image, p)
             train_data = []
             for value in max_prob_clusters.values():
                 train_data = train_data + value
        
-        print(train_data)
         self.dataloader.add_train(train_data)
         return train_data
 
     
-    def process_scores(self, every_n, out = None):
-        self.logits = self.aggregate_groupby(groups = ['vid_base_path'], every_n = every_n)
+    def process_scores(self):
+        self.logits = self.aggregate_groupby(groups = ['vid_base_path'])
 
         if (out != None):
             self.logits.to_csv(os.path.join(self.dataloader.round_working_dir, out))
@@ -116,19 +117,17 @@ class Selector:
 
         return 
         
-    def label(self, num_to_label = 100, cluster = True):
+    def label(self):
 
         global num_labeled
         global true_pos 
-
-        self.num_to_label = num_to_label 
 
         rank_order_images = self.logits['image_id'].tolist()
         rank_order_videos = self.logits['vid_base_path'].tolist()
 
         rank = 0
 
-        while (num_labeled < num_to_label and rank < len(rank_order_images)):
+        while (num_labeled < self.num_to_label and rank < len(rank_order_images)):
             image_id = rank_order_images[rank]
             vid_base_path = rank_order_videos[rank]
 
@@ -150,18 +149,20 @@ class Selector:
                 else: 
                     print("Rare class found!")
 
-        prec = round(true_pos / num_to_label, 10)
+        prec = round(true_pos / self.num_to_label, 10)
         with open(os.path.join(self.dataloader.round_working_dir, 'prec.txt'), 'w') as out:
             out.writelines([
                 f'project: {self.dataloader.project_name}\n', 
                 f'round: {self.dataloader.round_name}\n', 
-                f'precision@{num_to_label}: {prec}\n'
+                f'precision@{self.num_to_label}: {prec}\n'
                 ])
             out.close()
         return
 
-
-
+    def select():
+        self.process_scores()
+        self.label()
+        self.add_train_data()
 
 
 
