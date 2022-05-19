@@ -11,7 +11,7 @@ from PIL import Image
 import cv2
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision import transforms
-from ezmode import data
+from ezmode import DataLoader
 
 tx = trn.Compose([
         trn.ToTensor(),
@@ -120,11 +120,11 @@ def main():
 
     set_gpu(args.gpu)
 
-    dataloader = data.DataLoader(
+    dataloader = DataLoader(
             project_name = args.project_name, 
             root = args.root, 
             working_dir = args.working_dir, 
-            round_name = args.round_name,
+            round_no = args.round_no,
             db = args.db)
 
     model = load_model(
@@ -170,7 +170,7 @@ if __name__ == "__main__":
     parser.add_argument('--project_name', type = str)
     parser.add_argument('--root', type = str)
     parser.add_argument('--working_dir', type = str)
-    parser.add_argument('--round_name', type=str)
+    parser.add_argument('--round_no', type=int)
     parser.add_argument('--db', type = str)
     parser.add_argument('--num_classes', type = int)
     parser.add_argument('--num_videos', type = int)

@@ -6,7 +6,7 @@ import torch
 import torchvision
 from torchvision import transforms
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
-from .data import DataLoader
+from .dataloader import DataLoader
 from .utils import FRCNNDataLoader
 
 class Trainer:

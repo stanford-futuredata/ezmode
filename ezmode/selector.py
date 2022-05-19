@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from .data import *
+from .dataloader import *
 import glob
 import tqdm
 from .clusters import *
@@ -159,7 +159,7 @@ class Selector:
             out.close()
         return
 
-    def select():
+    def select(self):
         self.process_scores()
         self.label()
         self.add_train_data()

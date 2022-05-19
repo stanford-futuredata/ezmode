@@ -1,7 +1,7 @@
 import pandas as pd
 import subprocess
 import ezmode
-from ezmode import data
+from ezmode import dataloader
 import os
 
 
@@ -44,7 +44,7 @@ class InferEngine:
                     f'--project_name {self.dataloader.project_name} '
                     f'--root {self.dataloader.root} '
                     f'--working_dir {self.dataloader.working_dir} '
-                    f'--round_name {self.dataloader.round_name} '
+                    f'--round_no {self.dataloader.round_no} '
                     f'--db {self.dataloader.db} '
                     f'--num_classes {self.dataloader.get_num_classes()} '
                     f'--num_videos {num_videos} '

@@ -80,10 +80,10 @@ class DataLoader:
         self.train_df = train_df
         return 
 
-    def get_user_actions(self, 
-            start_idx = (self.round_no - 1) * 100, 
-            end_idx = self.round_no, 
-            with_labels = True):
+    def get_user_actions(self, with_labels = True):
+
+        start_idx = (self.round_no - 1) * 100
+        end_idx = self.round_no * 100
 
         data = []
         
