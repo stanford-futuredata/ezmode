@@ -9,7 +9,7 @@ from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from .data import DataLoader
 from .utils import FRCNNDataLoader
 
-class TrainEngine:
+class Trainer:
     def __init__(self, 
             model_backbone, 
             dataloader,
@@ -93,6 +93,7 @@ class TrainEngine:
                 shuffle = True)
 
         num_classes = self.dataloader.get_num_classes()
+        print(num_classes)
         model = self.load_model(self.model_backbone, self.model_path, num_classes)
 
         self.run(model, loader, lr, nb_epochs)  

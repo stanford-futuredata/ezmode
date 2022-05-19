@@ -1,6 +1,6 @@
+import pandas as pd
 import subprocess
 import ezmode
-import pandas as pd
 from ezmode import data
 import os
 
@@ -9,15 +9,17 @@ class InferEngine:
     def __init__(self, 
             dataloader, 
             model, 
-            gpus):
+            gpus, 
+            batch_size):
+
         self.dataloader = dataloader
         self.model = model
         self.gpus = gpus
+        self.batch_size = batch_size
 
     def deploy(self, script = None):
-        self.dataloader.init_metadata()
-        val_csv = self.dataloader.get_val_data()
-        val_data = pd.read_csv(val_csv)
+        infer_script_fname = os.path.join(os.path.dirname(ezmode.__file__), 'infer_script.py')
+        val_data = pd.read_csv(self.dataloader.get_val_data())
 
         videos = val_data['vid_base_path'].tolist()
         num_videos = len(videos)
@@ -46,9 +48,10 @@ class InferEngine:
                     f'--db {self.dataloader.db} '
                     f'--num_classes {self.dataloader.get_num_classes()} '
                     f'--num_videos {num_videos} '
-                    f'--to_process {to_process} \n')
+                    f'--to_process {to_process} '
+                    f'--batch_size {self.batch_size} \n')
 
-        infer_job = [subprocess.Popen(process, shell = True) for process in processes]
+        infer_jobs = [subprocess.Popen(process, shell = True) for process in processes]
         for infer_job in infer_jobs:
             infer_job.wait()
 

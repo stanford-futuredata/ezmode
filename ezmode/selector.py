@@ -8,7 +8,7 @@ from .clusters import *
 num_labeled = 0
 true_pos = 0
 
-class SelectEngine:
+class Selector:
     def __init__(self, 
             dataloader, 
             rare_class, 
