@@ -166,6 +166,7 @@ class DataLoader:
             rare_class = None):
 
         train_data = []
+
         with self.engine.connect() as con: 
             rs = con.execute(
                     'SELECT annotations.image_base_path, '
@@ -178,6 +179,7 @@ class DataLoader:
                     'INNER JOIN labels ON annotations.label=labels.label '
                     'WHERE annotations.split=\'train_ezmode\'')
             for row in rs:
+
                 image_base_path = str(row[0])
 
                 xmin = int(row[1])
@@ -197,7 +199,6 @@ class DataLoader:
         #Shuffle training data
         if (shuffle):
 
-            print("shuffling")
             self.train_df = self.train_df.sample(frac = 1).reset_index(drop = True)
 
         #Zero index the data labels for binary classification tasks

@@ -1,15 +1,9 @@
-import argparse
-import sqlite3
 import os
-import time
-import cv2
 import numpy as np
 import pandas as pd
 import tqdm
 import torch
 import torchvision
-from collections import defaultdict
-from sklearn.metrics import average_precision_score, roc_auc_score
 from torchvision import transforms
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from .data import DataLoader
@@ -37,13 +31,22 @@ class TrainEngine:
                 lr = lr,
                 momentum=0.9, weight_decay=1e-4
         )
-        for epoch in range(nb_epochs):
+        for epoch in tqdm.tqdm(range(nb_epochs)):
             self.train_epoch(model, optimizer, loader)
 
     def train_epoch(self, model, optimizer, loader):
         for batch_idx, (target, inp) in enumerate(loader):
-            inp = inp.cuda(non_blocking=True)
-            outp, detection = model(inp, [target])
+
+            batched_target = []
+            for i in range(len(target['labels'])):
+                bbox = {}
+                bbox['boxes'] = target['boxes'][i].reshape(1, -1)
+                bbox['labels'] = torch.unsqueeze(target['labels'][i], dim = 0)
+                bbox['image_id'] = torch.unsqueeze(target['image_id'][i], dim = 0)
+                bbox['area'] = torch.unsqueeze(target['area'][i], dim = 0)
+                batched_target.append(bbox)
+
+            outp, detection = model(inp, batched_target)
 
             losses = sum(loss for loss in outp.values())
 
@@ -54,17 +57,11 @@ class TrainEngine:
 
     def load_model(self, model_backbone, model_path, num_classes):
 
-        print("Loading pre-trained weights for Faster-RCNN model...")
         if (model_backbone=='MobileNetV3'):
             model = torchvision.models.detection.fasterrcnn_mobilenet_v3_large_fpn(pretrained = True) 
-            print("Loaded FRCNN weights with MobileNetV3 backbone!")
-
-        if (model_backbone=='ResNet50'): 
+        elif (model_backbone=='ResNet50'): 
             model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained = True) 
-            print("Loaded FRCNN weights with ResNet50 backbone!")
-
         if model_path is not None:
-            print("Loading weights from {}...".format(model_path))
             model.load_state_dict(torch.load(model_path))
 
         in_features = model.roi_heads.box_predictor.cls_score.in_features
@@ -90,7 +87,10 @@ class TrainEngine:
 
         train_data = self.dataloader.get_train_data()
         dset = FRCNNDataLoader(train_data)
-        loader = torch.utils.data.DataLoader(dataset = dset, batch_size = batch_size, shuffle=True)
+        loader = torch.utils.data.DataLoader(
+                dataset = dset, 
+                batch_size = batch_size, 
+                shuffle = True)
 
         num_classes = self.dataloader.get_num_classes()
         model = self.load_model(self.model_backbone, self.model_path, num_classes)

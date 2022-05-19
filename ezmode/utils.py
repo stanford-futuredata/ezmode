@@ -9,7 +9,7 @@ import cv2
 class FRCNNDataLoader(torch.utils.data.Dataset):
     def __init__(self, train_df):
         self.df = train_df
-        self.xform = torchvision.transforms.Compose([
+        self.transform = torchvision.transforms.Compose([
                 torchvision.transforms.ToTensor(),
                 torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ])
@@ -25,7 +25,7 @@ class FRCNNDataLoader(torch.utils.data.Dataset):
         im = cv2.imread(fname)
         im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
         im = cv2.resize(im, (224, 224), interpolation = cv2.INTER_AREA)
-        inp = self.xform(im)
+        inp = self.transform(im).cuda(non_blocking = True)
 
         boxes = torch.FloatTensor([row['xmin'], row['ymin'], row['xmax'], row['ymax']])
         labels = torch.tensor(row['label'], dtype=torch.int64)
