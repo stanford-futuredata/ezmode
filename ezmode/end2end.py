@@ -66,6 +66,19 @@ class EZModeEnd2End:
                 batch_size = self.infer_batch_size)
         infer_engine.deploy()
 
+        selector = Selector(
+                dataloader = dataloader, 
+                num_to_label = select_per_round, 
+                agg_every_n = 10,
+                rare_class = 25, 
+                prox = True, 
+                prox_rad = 5, 
+                cluster = True, 
+                cluster_p = 0.5)
+
+        selector.select()
+
+
 
     def run_fixed_rounds(self):
         for round_no in range(1, self.num_rounds + 1):

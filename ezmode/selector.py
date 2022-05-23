@@ -146,14 +146,6 @@ class Selector:
                 else: 
                     print("Rare class found!")
 
-        prec = round(true_pos / self.num_to_label, 10)
-        with open(os.path.join(self.dataloader.round_working_dir, 'prec.txt'), 'w') as out:
-            out.writelines([
-                f'project: {self.dataloader.project_name}\n', 
-                f'round: round{self.dataloader.round_no}\n', 
-                f'precision@{self.num_to_label}: {prec}\n'
-                ])
-            out.close()
         return
 
     def select(self):

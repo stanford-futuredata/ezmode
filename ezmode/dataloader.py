@@ -33,7 +33,6 @@ class DataLoader:
         if not os.path.exists(self.round_working_dir):
             os.mkdir(self.round_working_dir)
 
-
     def get_val_data(self):
         return self.val_data
 
@@ -260,6 +259,51 @@ class DataLoader:
     ''' 
     def get_engine(self):
         return engine
+
+    def get_precision(self, write = True):
+
+        num_found = 0
+        num_labeled = 0
+
+        with self.engine.connect() as con: 
+            rs = con.execute(
+                    'SELECT COUNT(DISTINCT image_id) FROM user_actions '
+                    f'WHERE label={self.rare_class}'
+            for row in rs: 
+                num_pos = int(row[0])
+
+            rs = con.execute(
+                    'SELECT COUNT(DISTINCT image_id) FROM user_actions')
+            for row in rs: 
+                num_labeled = int(row[0])
+
+       prec = num_found / num_labeled
+
+       if (write):
+           with open(os.path.join(self.round_working_dir, 'prec.txt')) as f:
+
+
+
+    def get_recall(self):
+        num_total = 0
+        num_found = 0
+        with self.engine.connect() as con: 
+            rs = con.execute(
+                    'SELECT COUNT(DISTINCT image_id) FROM annotations '
+                    f'WHERE label={self.rare_class} AND split=\'val\''
+                    )
+            for row in rs: 
+                num_total += int(row[0])
+
+            rs = con.execute(
+                    'SELECT COUNT(DISTINCT image_id) FROM user_actions '
+                    f'WHERE label={self.rare_class}'
+                    )
+            for row in rs: 
+                num_total += int(row[0])
+                num_found = int(row[0])
+
+        return round(num_found, num_total, 10)
 
     '''
     Returns image_ids for annotations in a video
