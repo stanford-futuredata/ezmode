@@ -36,7 +36,7 @@ You must organize the dataset as follows:
 
 # Config
 
-Here are the hyperparameters and options that you can customize when running the EZModeEnd2End engine. 
+Hyperparameters and options that you can customize when running the EZModeEnd2End engine. 
 * `db`: Path to project database
 * `init_db`: Boolean that determines whether to initialize the database if it does not exist
 * `annotations_csv`: Path to annotations CSV (see examples for desired format)
