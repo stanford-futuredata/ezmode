@@ -64,20 +64,6 @@ class DataLoader:
             gen_val_data()
 
 
-    '''
-    Return database path
-    '''
-    def get_db(self):
-        return self.db
-
-
-    '''
-    Set training data 
-    '''
-    def set_train_data(self, csv):
-        train_df = pd.read_csv(csv)
-        self.train_df = train_df
-        return 
 
     def get_user_actions(self, with_labels = True):
 
@@ -374,104 +360,6 @@ class DataLoader:
                         )
         return 
 
-
-    def annot_exists(self, image_id):
-        
-        with self.engine.connect() as con: 
-            rs = con.execute(
-                    'SELECT COUNT(image_id) '
-                    'FROM annotations '
-                    f'WHERE image_id={image_id} '
-                    'AND label IS NOT NULL '
-                    )
-            for row in rs: 
-                if (int(row[0]) == 0):
-                    return False
-
-                return True
-
-    def num_annots(self):
-        
-        with self.engine.connect() as con: 
-            rs = con.execute(
-                    'SELECT COUNT(*) FROM annotations'
-                    )
-
-            for row in rs: 
-                return int(row[0])
-
-    def insert_vott_labels(self, csv):
-        
-        META_DATA = sqlalchemy.MetaData(bind = self.engine, reflect = True)
-        annot_table = META_DATA.tables['annotations']
-
-        df = pd.read_csv(csv)
-        image_ids = [int(image_name.split('.')[0]) for image_name in df['image'].tolist()]
-
-        with self.engine.connect() as con: 
-            for idx in range(len(df)):
-                row_data = df.iloc[idx]
-
-                image_id = image_ids[idx]
-                xmin = row_data['xmin']
-                xmax = row_data['xmax']
-                ymin = row_data['ymin']
-                ymax = row_data['ymax']
-
-                label_name = row_data['label']
-
-                new_split = 'train_ezmode'
-
-                label_idx = None
-                rs = con.execute(
-                        'SELECT label FROM labels '
-                        f'WHERE name=\'{label_name}\'')
-
-                for row in rs: 
-                    label_idx = int(row[0])
-                    break 
-                
-                if (self.annot_exists(image_id)):
-
-                    image_base_path = self.id_to_image_path(image_id)
-                    vid_base_path = image_base_path.split('/')[0]
-                    new_annot_id = self.num_annots() + 1
-
-                    command = (
-                            insert(annot_table).
-                            values(
-                                image_base_path = image_base_path, 
-                                vid_base_path = vid_base_path,
-                                image_id = image_id, 
-                                label = label_idx,
-                                xmin = xmin, 
-                                xmax = xmax, 
-                                ymin = ymin, 
-                                ymax = ymax, 
-                                split = new_split, 
-                                labeled = 1,
-                                annot_id = new_annot_id)
-                            )
-                    compiled = command.compile()
-                    rs = con.execute(compiled)
-
-                else:
-                    command = (
-                            update(annot_table).
-                            where(annot_table.c.image_id == image_id).
-                            values(
-                                label = label_idx,
-                                xmin = xmin, 
-                                xmax = xmax, 
-                                ymin = ymin, 
-                                ymax = ymax, 
-                                split = new_split, 
-                                labeled = 1)
-                            )
-                    compiled = command.compile()
-                    rs = con.execute(compiled)
-
-            
 
     '''
     Label image, return label
