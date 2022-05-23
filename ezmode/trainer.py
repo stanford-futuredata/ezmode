@@ -11,11 +11,9 @@ from .utils import FRCNNDataLoader
 
 class Trainer:
     def __init__(self, 
-            model_backbone, 
             dataloader,
             model_path = None):
 
-        self.model_backbone = model_backbone
         self.dataloader = dataloader
         self.model_path = model_path 
 
@@ -55,12 +53,9 @@ class Trainer:
             optimizer.step()
 
 
-    def load_model(self, model_backbone, model_path, num_classes):
+    def load_model(self, model_path, num_classes):
 
-        if (model_backbone=='MobileNetV3'):
-            model = torchvision.models.detection.fasterrcnn_mobilenet_v3_large_fpn(pretrained = True) 
-        elif (model_backbone=='ResNet50'): 
-            model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained = True) 
+        model = torchvision.models.detection.fasterrcnn_mobilenet_v3_large_fpn(pretrained = True) 
         if model_path is not None:
             model.load_state_dict(torch.load(model_path))
 
@@ -77,7 +72,7 @@ class Trainer:
             lr, 
             nb_epochs):
 
-        dest = os.path.join(self.dataloader.round_working_dir, 'model_lr={}_epochs={}_backbone={}.pth'.format(lr, nb_epochs, self.model_backbone))
+        dest = os.path.join(self.dataloader.round_working_dir, 'model_lr={}_epochs={}.pth'.format(lr, nb_epochs))
         torch.save(model.state_dict(), dest)
 
         print("Done Training! Model saved to {}".format(dest))
@@ -94,7 +89,7 @@ class Trainer:
 
         num_classes = self.dataloader.get_num_classes()
         print(num_classes)
-        model = self.load_model(self.model_backbone, self.model_path, num_classes)
+        model = self.load_model(self.model_path, num_classes)
 
         self.run(model, loader, lr, nb_epochs)  
 
