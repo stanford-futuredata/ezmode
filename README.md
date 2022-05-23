@@ -13,7 +13,7 @@ For each dataset, you will need to do the following
 2. Create a CSV storing annotations
 3. Create a CSV storing labels
 
-We have provided the annotation and label CSVs for the ImageNet-VID and YouTube-BB datasets in `examples/data`. To run EZMode on other labeled datasets, please replicate this format. 
+We have provided the annotation and label CSVs for the ImageNet-VID and YouTube-BB datasets at this [link](https://drive.google.com/file/d/1tWDviec-nzbJCxdYdQ4QFrhn3TrfUJOX/view?usp=sharing). Please download and unzip this file to access the annotation and label CSVs for ImageNet-VID and Youtube-BB. To run EZMode on other labeled datasets, please replicate this format. 
 
 ### Dataset Organization
 
