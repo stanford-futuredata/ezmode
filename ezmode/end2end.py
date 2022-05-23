@@ -87,7 +87,7 @@ class EZModeEnd2End:
 
         selector = Selector(
                 dataloader = dataloader, 
-                num_to_label = select_per_round, 
+                select_per_round = self.select_per_round, 
                 agg_every_n = self.agg_every_n,
                 prox = self.prox, 
                 prox_rad = self.prox_rad, 
@@ -125,10 +125,10 @@ class EZModeEnd2End:
             database.create()
             database.init_tables()
 
-        database.init_train_set(
-                num_pos_train = self.num_pos_train_seed, 
-                num_neg_train = self.num_neg_train_seed,
-                rare_class = self.rare_class)
+        #database.init_train_set(
+        #        num_pos_train = self.num_pos_train_seed, 
+        #        num_neg_train = self.num_neg_train_seed,
+        #        rare_class = self.rare_class)
 
         if self.select_to_recall:
             self.run_to_recall()

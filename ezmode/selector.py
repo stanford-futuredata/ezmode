@@ -11,7 +11,7 @@ true_pos = 0
 class Selector:
     def __init__(self, 
             dataloader, 
-            num_to_label, 
+            select_per_round, 
             agg_every_n, 
             prox, 
             prox_rad, 
@@ -20,7 +20,7 @@ class Selector:
             add_only_rare = True):
 
         self.dataloader = dataloader
-        self.num_to_label = num_to_label
+        self.select_per_round = select_per_round
         self.agg_every_n = agg_every_n
         self.prox = prox
         self.prox_rad = prox_rad 
@@ -99,7 +99,7 @@ class Selector:
             if (image_id == center_image_id or self.dataloader.id_is_labeled(image_id)):
                 continue
 
-            if (num_labeled >= self.num_to_label):
+            if (num_labeled >= self.select_per_round):
                 return 
 
             num_labeled += 1
@@ -122,7 +122,7 @@ class Selector:
 
         rank = 0
 
-        while (num_labeled < self.num_to_label and rank < len(rank_order_images)):
+        while (num_labeled < self.select_per_round and rank < len(rank_order_images)):
             image_id = rank_order_images[rank]
             vid_base_path = rank_order_videos[rank]
 

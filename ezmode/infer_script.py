@@ -125,6 +125,7 @@ def main():
             root = args.root, 
             working_dir = args.working_dir, 
             round_no = args.round_no,
+            rare_class = args.rare_class, 
             db = args.db)
 
     model = load_model(
@@ -168,6 +169,7 @@ if __name__ == "__main__":
     parser.add_argument('--model', type = str)
     parser.add_argument('--gpu', type = int)
     parser.add_argument('--project_name', type = str)
+    parser.add_argument('--rare_class', type = str)
     parser.add_argument('--root', type = str)
     parser.add_argument('--working_dir', type = str)
     parser.add_argument('--round_no', type=int)

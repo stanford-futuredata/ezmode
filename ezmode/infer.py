@@ -42,6 +42,7 @@ class InferEngine:
                     f'--model {self.model} '
                     f'--gpu {gpu} '
                     f'--project_name {self.dataloader.project_name} '
+                    f'--rare_class {self.dataloader.rare_class} '
                     f'--root {self.dataloader.root} '
                     f'--working_dir {self.dataloader.working_dir} '
                     f'--round_no {self.dataloader.round_no} '

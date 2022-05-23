@@ -248,7 +248,7 @@ class DataLoader:
     def get_engine(self):
         return engine
 
-    def get_precision(self, write = True):
+    def get_precision(self):
 
         num_found = 0
         num_labeled = 0
@@ -266,10 +266,12 @@ class DataLoader:
                 num_labeled = int(row[0])
                 
         prec = num_found / num_labeled
+
+        with open(os.path.join(self.round_working_dir, 'prec.txt'), 'w') as f: 
+            f.write(f'{prec}')
+
         return prec
 
-       #if (write):
-       #    with open(os.path.join(self.round_working_dir, 'prec.txt')) as f:
 
 
 
@@ -293,8 +295,11 @@ class DataLoader:
                 num_found = int(row[0])
 
         recall = num_found / num_total
+
+        with open(os.path.join(self.round_working_dir, 'recall.txt'), 'w') as f: 
+            f.write(f'{recall}')
+
         return recall
-        #return round(num_found, num_total, 10)
 
     '''
     Returns image_ids for annotations in a video
