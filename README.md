@@ -4,5 +4,4 @@ This is the official project page for "Active Search for Rare Examples via Proxi
 # Requirements
 Install the requitements with `pip install -r requirements.txt`
 
-To reproduce the experiments, your machine will need:
 
