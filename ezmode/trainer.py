@@ -87,11 +87,8 @@ class Trainer:
                 batch_size = batch_size, 
                 shuffle = True)
 
-        num_classes = self.dataloader.get_num_classes()
-        print(num_classes)
-        model = self.load_model(self.model_path, num_classes)
-
+        model = self.load_model(self.model_path, self.dataloader.get_num_classes())
         self.run(model, loader, lr, nb_epochs)  
-
         model_dest = self.save_model(model, lr, nb_epochs)
+
         return model_dest
