@@ -13,9 +13,9 @@ For each dataset, you will need to do the following
 2. Create a CSV storing annotations
 3. Create a CSV storing labels
 
-We have provided the annotation and label CSVs for the ImageNet-VID and YouTube-BB datasets in `examples/data`
+We have provided the annotation and label CSVs for the ImageNet-VID and YouTube-BB datasets in `examples/data`. To run EZMode on other labeled datasets, please replicate this format. 
 
-## Dataset Organization
+### Dataset Organization
 
 You must organize the dataset as follows: 
 1. Create a directory to exclusively store the dataset. We will call this the `dataset_root`
@@ -34,4 +34,3 @@ You must organize the dataset as follows:
 │   └── video_n
 ```
 
-## Dataset CSVs
