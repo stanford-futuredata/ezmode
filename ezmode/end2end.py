@@ -70,9 +70,9 @@ class EZModeEnd2End:
                 round_no = round_no, 
                 db = self.db, 
                 rare_class = self.rare_class)
+        dataloader.init_metadata()
 
         trainer = Trainer(dataloader = dataloader)
-
         saved_model = trainer.train(
                 lr = self.lr, 
                 nb_epochs = self.nb_epochs, 
@@ -93,7 +93,6 @@ class EZModeEnd2End:
                 prox_rad = self.prox_rad, 
                 cluster = self.cluster, 
                 cluster_p = self.cluster_p)
-
         selector.select()
 
         prec = dataloader.get_precision()
@@ -105,12 +104,14 @@ class EZModeEnd2End:
     def run_fixed_rounds(self):
         for round_no in range(1, self.num_rounds + 1):
             prec, recall = self.run_one_round(round_no)
+            print(f'Round {round_no} Completed: Precision = {prec}, Recall = {recall}')
 
     def run_to_recall(self):
         recall = 0
         round_no = 1
         while (recall < self.target_recall):
             prec, recall = run_one_round(round_no)
+            print(f'Round {round_no} Completed: Precision = {prec}, Recall = {recall}')
             round_no += 1
 
     def run(self):
