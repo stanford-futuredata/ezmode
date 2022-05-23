@@ -13,10 +13,10 @@ For each dataset, you will need to organize the dataset as follows:
 ├── directory_root
 │   ├── video_1
 │   └── video_2
-			├── video_2_frame_1.jpg
-			├── video_2_frame_2.jpg
-			├── video_2_frame_3.jpg
-			├── ...
+	├── video_2_frame_1.jpg
+	├── video_2_frame_2.jpg
+	├── video_2_frame_3.jpg
+	├── ...
 |	...
 │   └── video_n
 ```
