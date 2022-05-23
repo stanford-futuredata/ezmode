@@ -10,13 +10,13 @@ To reproduce experiments on the ImageNet-VID and YouTube-BB datasets, run `examp
 
 For each dataset, you will need to organize the dataset as follows: 
 ```
-├── directory\_root \n
-│   ├── video\_1\n
-│   └── video\_2\n
-│		├── video\_2\_frame\_1.jpg\n
-│		├── video\_2\_frame\_2.jpg\n
-│		├── video\_2\_frame\_3.jpg\n
-│		├── ...\n
-|	...\n
-│   └── video\_n
+├── directory_root
+│   ├── video_1
+│   └── video_2
+│		├── video_2_frame_1.jpg
+│		├── video_2_frame_2.jpg
+│		├── video_2_frame_3.jpg
+│		├── ...
+|	...
+│   └── video_n
 ```
