@@ -48,6 +48,17 @@ Here are the hyperparameters and options that you can customize when running the
 * `working_dir`: Path to write outputs (models, scores, etc.)
 * `project_name`: Project name (i.e. "im-vid", or "youtube")
 * `select_to_recall`: Boolean that determines whether to run EZMode until recall target is achieved
-* `target_recall`: Target recall
-* 
+* `target_recall`: Target recall to run to if `select_to_recall` set to True
+* `num_rounds`: Number of rounds to run (only used `select_to_recall` set to False)
+* `select_per_round`: Maximum number of oracle calls per round
+* `lr`: Learning rate
+* `nb_epochs`: Number of training epochs
+* `train_batch_size`: Batch size for training
+* `infer_batch_size`: Batch size for inference
+* `gpus`: Number of GPUs on your machine
+* `agg_every_n`: When generating the rank ordering, we select the max-scoring frame across every-n frames in a given video. 
+* `prox`: Boolean that determines whether to perform proximity sampling
+* `prox_rad`: Proximity radius
+* `cluster`: Boolean that determines whether to perform training on easiest examples from each cluster
+* `cluster_p`: Upper percentile of examples by confidence to add back to the training set 
 
