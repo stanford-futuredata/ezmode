@@ -9,7 +9,7 @@ Install the requitements with `pip install -r requirements.txt`
 To reproduce experiments on the ImageNet-VID and YouTube-BB datasets, run `examples/im-vid.py` and `examples/yt.py`.
 
 For each dataset, you will need to organize the dataset as follows: 
-
+```
 ├── directory\_root \n
 │   ├── video\_1\n
 │   └── video\_2\n
@@ -19,4 +19,4 @@ For each dataset, you will need to organize the dataset as follows:
 │		├── ...\n
 |	...\n
 │   └── video\_n
-
+```
