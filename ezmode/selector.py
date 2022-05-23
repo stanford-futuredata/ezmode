@@ -30,7 +30,6 @@ class Selector:
         self.cluster_p = cluster_p
         self.add_only_rare = add_only_rare
         self.logits = None
-        self.num_to_label = None
 
         scores_dir = os.path.join(self.dataloader.round_working_dir, 'scores')
         self.scores = glob.glob(os.path.join(scores_dir, '*'))
@@ -82,9 +81,7 @@ class Selector:
     
     def process_scores(self):
         self.logits = self.aggregate_groupby(groups = ['vid_base_path'])
-
-        if (out != None):
-            self.logits.to_csv(os.path.join(self.dataloader.round_working_dir, out))
+        self.logits.to_csv(os.path.join(self.dataloader.round_working_dir, 'logits.csv'))
 
     def sample_via_proximity(self, center_image_id, vid_base_path):
         global num_labeled
@@ -137,9 +134,9 @@ class Selector:
                 print("Found labeled image! Moving on...")
                 continue 
 
-            label = self.dataloader.label_image(image_id, self.rare_class, strat = self.dataloader.round_name)
+            label = self.dataloader.label_image(image_id, self.rare_class, strat = f'round{self.dataloader.round_no}')
             num_labeled += 1
-            print(f'image_id={image_id}, label={label}, strat={self.dataloader.round_name}. {num_labeled} total images labeled')
+            print(f'image_id={image_id}, label={label}, strat=round{self.dataloader.round_no}. {num_labeled} total images labeled')
 
             if (label == self.rare_class):
                 true_pos += 1
@@ -153,7 +150,7 @@ class Selector:
         with open(os.path.join(self.dataloader.round_working_dir, 'prec.txt'), 'w') as out:
             out.writelines([
                 f'project: {self.dataloader.project_name}\n', 
-                f'round: {self.dataloader.round_name}\n', 
+                f'round: round{self.dataloader.round_no}\n', 
                 f'precision@{self.num_to_label}: {prec}\n'
                 ])
             out.close()
