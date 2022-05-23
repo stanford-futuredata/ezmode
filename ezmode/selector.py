@@ -13,7 +13,6 @@ class Selector:
             dataloader, 
             num_to_label, 
             agg_every_n, 
-            rare_class, 
             prox, 
             prox_rad, 
             cluster, 
@@ -23,7 +22,6 @@ class Selector:
         self.dataloader = dataloader
         self.num_to_label = num_to_label
         self.agg_every_n = agg_every_n
-        self.rare_class = rare_class
         self.prox = prox
         self.prox_rad = prox_rad 
         self.cluster = cluster
@@ -42,7 +40,7 @@ class Selector:
         for logits_csv in tqdm.tqdm(self.scores):
 
             logits = pd.read_csv(logits_csv)
-            logits = logits[logits['label']==self.rare_class]
+            logits = logits[logits['label']==self.dataloader.rare_class]
             logits_per_group = logits.groupby(by=groups)
 
             for group in logits_per_group.__iter__():
@@ -64,11 +62,11 @@ class Selector:
         train_data = self.dataloader.get_user_actions()
 
         if (only_rare):
-            train_data = [image  for image in train_data if (image[3]==self.rare_class)]
+            train_data = [image  for image in train_data if (image[3]==self.dataloader.rare_class)]
 
         if (cluster):
             logits_per_image = self.aggregate_groupby(groups = ['vid_base_path', 'image_id'])
-            train_data_rare = [image  for image in train_data if (image[3]==self.rare_class)]
+            train_data_rare = [image  for image in train_data if (image[3]==self.dataloader.rare_class)]
             clusters = get_merged(train_data_rare)
             max_prob_clusters = conf_sample(clusters, logits_per_image, p)
             train_data = []
@@ -105,10 +103,10 @@ class Selector:
                 return 
 
             num_labeled += 1
-            label = self.dataloader.label_image(image_id, self.rare_class, strat = 'temp')
+            label = self.dataloader.label_image(image_id, self.dataloader.rare_class, strat = 'temp')
             print(f'image_id={image_id}, label={label}, strat=temp. {num_labeled} total images labeled')
 
-            if (label == self.rare_class):
+            if (label == self.dataloader.rare_class):
                 true_pos += 1
                 self.sample_via_proximity(image_id, vid_base_path)
 
@@ -134,11 +132,11 @@ class Selector:
                 print("Found labeled image! Moving on...")
                 continue 
 
-            label = self.dataloader.label_image(image_id, self.rare_class, strat = f'round{self.dataloader.round_no}')
+            label = self.dataloader.label_image(image_id, self.dataloader.rare_class, strat = f'round{self.dataloader.round_no}')
             num_labeled += 1
             print(f'image_id={image_id}, label={label}, strat=round{self.dataloader.round_no}. {num_labeled} total images labeled')
 
-            if (label == self.rare_class):
+            if (label == self.dataloader.rare_class):
                 true_pos += 1
                 if (self.prox):
                     print(f'Rare class found! Starting proximity sampling on {image_id}')

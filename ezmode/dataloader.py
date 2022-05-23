@@ -13,6 +13,7 @@ class DataLoader:
             root, 
             working_dir, 
             round_no, 
+            rare_class, 
             db):
 
         self.project_name= project_name
@@ -20,6 +21,7 @@ class DataLoader:
         self.working_dir = working_dir
         self.round_no = round_no
         self.db = db
+        self.rare_class = rare_class
         self.train_data = None
         self.train_df = None
 
@@ -254,19 +256,20 @@ class DataLoader:
         with self.engine.connect() as con: 
             rs = con.execute(
                     'SELECT COUNT(DISTINCT image_id) FROM user_actions '
-                    f'WHERE label={self.rare_class}'
+                    f'WHERE label={self.rare_class}')
             for row in rs: 
-                num_pos = int(row[0])
+                num_found = int(row[0])
 
             rs = con.execute(
                     'SELECT COUNT(DISTINCT image_id) FROM user_actions')
             for row in rs: 
                 num_labeled = int(row[0])
+                
+        prec = num_found / num_labeled
+        return prec
 
-       prec = num_found / num_labeled
-
-       if (write):
-           with open(os.path.join(self.round_working_dir, 'prec.txt')) as f:
+       #if (write):
+       #    with open(os.path.join(self.round_working_dir, 'prec.txt')) as f:
 
 
 
@@ -289,7 +292,9 @@ class DataLoader:
                 num_total += int(row[0])
                 num_found = int(row[0])
 
-        return round(num_found, num_total, 10)
+        recall = num_found / num_total
+        return recall
+        #return round(num_found, num_total, 10)
 
     '''
     Returns image_ids for annotations in a video
