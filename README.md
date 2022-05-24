@@ -6,7 +6,7 @@ Install the requitements with `pip install -r requirements.txt`
 
 # Reproducing Experiments
 
-To reproduce experiments on the ImageNet-VID and YouTube-BB datasets, run `examples/im-vid.py` and `examples/yt.py`.
+To reproduce experiments on the ImageNet-VID and YouTube-BB datasets, run `examples/im-vid.py` and `examples/youtube.py`.
 
 For each dataset, you will need to do the following
 1. Organize the dataset in the by videos (see below)
