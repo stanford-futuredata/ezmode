@@ -17,6 +17,9 @@ class InferEngine:
         self.gpus = gpus
         self.batch_size = batch_size
 
+    '''
+    Generate commands for inference and deploy inference processes
+    '''
     def deploy(self, script = None):
         infer_script_fname = os.path.join(os.path.dirname(ezmode.__file__), 'infer_script.py')
         val_data = pd.read_csv(self.dataloader.get_val_data())
