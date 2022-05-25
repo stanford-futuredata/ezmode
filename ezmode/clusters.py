@@ -4,6 +4,10 @@ import numpy as np
 from collections import defaultdict
 
 
+'''
+Returns images and bounding box data for examples in each cluster with scores
+in top p percentile
+'''
 def conf_sample(merged, scores, p):
 
     def get_top_quantile(images):
@@ -29,6 +33,9 @@ def conf_sample(merged, scores, p):
 
     return max_prob_merged 
 
+'''
+Returns clusters based on proximity structure
+'''
 def get_merged(data):
     def is_close(cur_row, rows):
         for row in rows:

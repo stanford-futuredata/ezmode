@@ -21,6 +21,9 @@ class Database:
         self.labels_df = pd.read_csv(self.labels_csv)
         self.engine = create_engine('sqlite:///{}'.format(self.db))
 
+    '''
+    Create database and schema
+    '''
     def create(self):
         with self.engine.connect() as con: 
             con.execute('''
@@ -75,6 +78,9 @@ class Database:
                     )
                     ''')
 
+    '''
+    Insert annotations
+    '''
     def insert_annotations(self): 
         metadata_obj = MetaData()
         metadata_obj.reflect(bind = self.engine)
@@ -108,6 +114,9 @@ class Database:
                 )
         session.commit()
 
+    '''
+    Insert labels
+    '''
     def insert_labels(self):
         metadata_obj = MetaData()
         metadata_obj.reflect(bind = self.engine)
@@ -132,10 +141,16 @@ class Database:
                 )
         session.commit()
 
+    '''
+    Initialize tables
+    '''
     def init_tables(self):
         self.insert_labels()
         self.insert_annotations()
 
+    '''
+    Insert training data seed
+    '''
     def insert_train_data(self, df):
 
         with self.engine.connect() as con: 
@@ -154,6 +169,9 @@ class Database:
                         f'AND annot_id={annot_id}'
                         )
 
+    '''
+    Generate training data seed
+    '''
     def init_train_set(self, 
         num_pos_train, 
         num_neg_train, 

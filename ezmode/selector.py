@@ -32,6 +32,9 @@ class Selector:
         scores_dir = os.path.join(self.dataloader.round_working_dir, 'scores')
         self.scores = glob.glob(os.path.join(scores_dir, '*'))
 
+    '''
+    Aggregate logits by `groups`
+    '''
     def aggregate_groupby(self, groups):
         print("Starting aggregation...")
 
@@ -57,9 +60,12 @@ class Selector:
         groupby_logits = groupby_logits.sort_values(by='score', ascending = False)
         return groupby_logits
 
-    def add_train_data(self, only_rare = False, cluster = True, p = 0.5):
+    '''
+    Performs cluster-based sampling, adds new training data to database
+    '''
+    def get_train_data(self, only_rare = False, cluster = True, p = 0.5):
 
-        train_data = self.dataloader.get_user_actions()
+        train_data = self.dataloader.get_user_actions(self.select_per_round)
 
         if (only_rare):
             train_data = [image  for image in train_data if (image[3]==self.dataloader.rare_class)]
@@ -77,11 +83,18 @@ class Selector:
         return train_data
 
     
+    '''
+    Aggregate logits
+    '''
     def process_scores(self):
         self.logits = self.aggregate_groupby(groups = ['vid_base_path'])
         self.logits.to_csv(os.path.join(self.dataloader.round_working_dir, 'logits.csv'))
 
+    '''
+    Proximity sampling around image with image_id=`center_image_id`
+    '''
     def sample_via_proximity(self, center_image_id, vid_base_path):
+
         global num_labeled
         global true_pos
 
@@ -112,6 +125,9 @@ class Selector:
 
         return 
         
+    '''
+    Perform labeling via proximity sampling, add training data via clustering
+    '''
     def label(self):
 
         global num_labeled
@@ -144,12 +160,10 @@ class Selector:
                 else: 
                     print("Rare class found!")
 
-        return
-
     def select(self):
         self.process_scores()
         self.label()
-        self.add_train_data()
+        self.get_train_data()
 
 
 

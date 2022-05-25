@@ -35,9 +35,15 @@ class DataLoader:
         if not os.path.exists(self.round_working_dir):
             os.mkdir(self.round_working_dir)
 
+    '''
+    Returns path to CSV containing validation videos
+    '''
     def get_val_data(self):
         return self.val_data
 
+    '''
+    Writes CSV containing validatio videos
+    '''
     def init_metadata(self, root = False):
         def gen_val_data():
 
@@ -67,10 +73,13 @@ class DataLoader:
 
 
 
-    def get_user_actions(self, with_labels = True):
+    '''
+    Return oracle labels for current round
+    '''
+    def get_user_actions(self, select_per_round, with_labels = True):
 
-        start_idx = (self.round_no - 1) * 100
-        end_idx = self.round_no * 100
+        start_idx = (self.round_no - 1) * select_per_round
+        end_idx = self.round_no * select_per_round
 
         data = []
         
@@ -248,6 +257,9 @@ class DataLoader:
     def get_engine(self):
         return engine
 
+    '''
+    Returns overall precision across oracle calls. Writes precision to `round*/prec.txt`
+    '''
     def get_precision(self):
 
         num_found = 0
@@ -275,6 +287,9 @@ class DataLoader:
 
 
 
+    '''
+    Returns recall across oracle calls. Writes recall to `round*/recall.txt`
+    '''
     def get_recall(self):
         num_total = 0
         num_found = 0
@@ -345,6 +360,9 @@ class DataLoader:
 
         return image_base_paths
 
+    '''
+    Adds training examples to database
+    '''
     def add_train(self, train_data):
 
         image_ids = np.unique([train_img[0] for train_img in train_data])
